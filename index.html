@@ -1,0 +1,100 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #three {
+            width: 100%;
+            height: 90vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <!-- <script src="./js/index.js"></script> -->
+</head>
+<body>
+    <div id="three">
+        <!-- <canvas id="three-canvas"></canvas> -->
+    </div>
+
+    <script src="js/three.js"></script>
+    <script>
+        // scene creation
+        const scene = new THREE.Scene();
+
+        // webGl renderer
+        const WIDTH = 300;
+        const HEIGHT = 300;
+        const renderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: true
+        });
+        renderer.setSize(WIDTH, HEIGHT);
+        
+        // Light
+        const pointLight = new THREE.PointLight(0xFFFFFF, 0.5); // color, intensity
+        pointLight.position.x = 100;
+        pointLight.position.y = 100;
+        pointLight.position.z = 30;
+        scene.add(pointLight);
+
+        // geometry means bone, frame..
+        const geometry = new THREE.Geometry();
+        // 꼭짓점
+        geometry.vertices.push(
+            new THREE.Vector3(-10, 10, 0),
+            new THREE.Vector3(-10, -10, 0),
+            new THREE.Vector3(10, 0, 0)
+        );
+        // 꼭짓점 index 0, 1, 2를 선으로 잇는다
+        geometry.faces.push(new THREE.Face3(0, 1, 2));
+
+
+        // Shortcut
+        const RADIUS = 40
+        const octGeometry = new THREE.OctahedronGeometry(RADIUS, 0);
+        // material means 면
+        const material = new THREE.MeshLambertMaterial({ color: 0x00FF00 });
+
+        // Mesh = Geometry + Material
+        const mesh = new THREE.Mesh(octGeometry, material);
+
+        // default position is (0, 0, 0)
+        scene.add(mesh);
+        mesh.position.z = -RADIUS * 10;
+
+
+        // Camera
+        const FIELD_OF_VIEW = 20; // 시야각 deg
+        const ASPECT = WIDTH / HEIGHT; // 시야의 가로:세로 비율
+        const NEAR = 0.1; // 카메라 - 물체 거리의 하한값
+        const FAR = 1000; // 카메라 - 물체 거리의 상한값
+        const camera = new THREE.PerspectiveCamera(FIELD_OF_VIEW, ASPECT, NEAR, FAR);
+
+        // Container DOM
+        const container = document.getElementById("three");
+        // canvas element
+        container.appendChild(renderer.domElement);
+
+        // render!
+        // renderer.render(scene, camera);
+        function update() {
+            const speed = 0.03;
+            mesh.rotation.x += speed;
+            mesh.rotation.y += speed;
+            // mesh.rotation.z += speed;
+            renderer.render(scene, camera);
+            requestAnimationFrame(update)
+        }
+
+        update();
+    </script>   
+</body>
+</html>
